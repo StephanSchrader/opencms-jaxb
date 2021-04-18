@@ -1,6 +1,8 @@
 ## OpenCms Schema
 
-Generate *opencms-xmlcontent.xsd* at runtime. Create a JSP inside the workplace and copy into: 
+This is a proof of concept! Creating classes from content XSDs and map XML files.
+
+Generate *opencms-xmlcontent.xsd* at runtime. Create a JSP inside the workplace and copy into:
 
     org.opencms.xml.CmsXmlEntityResolver resolver = new org.opencms.xml.CmsXmlEntityResolver(null);
     org.xml.sax.InputSource source = resolver.resolveEntity(null, org.opencms.xml.CmsXmlContentDefinition.XSD_INCLUDE_OPENCMS);
