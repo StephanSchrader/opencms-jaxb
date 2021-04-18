@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>de.mustnotbenamed.opencms</groupId>
+    <artifactId>beanmapper</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+    </properties>
+
+    <dependencies>
+        <!--<dependency>-->
+            <!--<groupId>org.opencms</groupId>-->
+            <!--<artifactId>opencms-core</artifactId>-->
+            <!--<version>9.0.1</version>-->
+            <!--<exclusions>-->
+                <!--<exclusion>-->
+                    <!--<groupId>com.sun</groupId>-->
+                    <!--<artifactId>tools</artifactId>-->
+                <!--</exclusion>-->
+            <!--</exclusions>-->
+        <!--</dependency>-->
+
+        <!--<dependency>-->
+            <!--<groupId>cryptix-jce</groupId>-->
+            <!--<artifactId>cryptix-jce-provider</artifactId>-->
+            <!--<version>20050328</version>-->
+        <!--</dependency>-->
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.3.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-library</artifactId>
+            <version>1.3</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <target>
+                                <fileset id="schema-fileset" dir="src/main/schema" />
+                                <pathconvert property="schema-file-list" refid="schema-fileset" pathsep="">
+                                    <scriptmapper language="javascript">
+                                        var schemaDir = project.getBaseDir() + "/src/main/schema/";
+                                        var mapping = "REWRITE_SYSTEM ";
+
+                                        mapping += "\"opencms://" + source.replace(schemaDir, "") + "\""
+                                        mapping += " "
+                                        mapping += "\"" + source + "\"" + "\n";
+
+                                        self.addMappedName(mapping);
+                                    </scriptmapper>
+                                </pathconvert>
+                                <echo file="${project.build.directory}/catalog.cat">${schema-file-list}</echo>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.jvnet.jaxb2.maven2</groupId>
+                <artifactId>maven-jaxb2-plugin</artifactId>
+                <version>0.12.3</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <schemaDirectory>src/main/schema</schemaDirectory>
+                    <generatePackage>com.alkacon.bootstrap.schemas</generatePackage>
+                    <enableIntrospection>true</enableIntrospection>
+
+                    <schemaIncludes>
+                        <include>system/modules/com.alkacon.bootstrap.schemas/schemas/blog.xsd</include>
+                    </schemaIncludes>
+
+                    <strict>false</strict>
+                    <verbose>true</verbose>
+
+                    <catalog>${project.build.directory}/catalog.cat</catalog>
+                    <markGenerated>true</markGenerated>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
